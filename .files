@@ -1,4 +1,3 @@
-file_checker.sh
-database_checker.sh
+zenity-help.txt
 ./databases/users.txt
 ./databases/animes.txt
