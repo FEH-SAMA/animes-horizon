@@ -1,4 +1,2 @@
-file_checker.sh
-database_checker.sh
 ./databases/users.txt
 ./databases/animes.txt
