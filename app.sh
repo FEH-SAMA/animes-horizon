@@ -31,10 +31,47 @@ echo '░░░░░░░░░░░░░░░░░░░░░░░░�
 
 login() {
 	init() {
-		DADOS=$(zenity --forms --title="$TITLE" --add-entry="Email/Usuário" --add-password="Senha");
+		DADOS=$(zenity --forms --title="$TITLE" --add-entry="Email" --add-password="Senha");
 
 		EMAIL=$(echo "$DADOS" | cut -d, -f1)
-		PASS=$(echo "$DADOS" | cut -d, -f2)		
+		PASS=$(echo "$DADOS" | cut -d, -f2)
+		if [[ -z $EMAIL ]]; then
+			EMAIL_CHECKER=$(echo "$EMAIL" | grep "@gmail.com")
+			if [[ -z $EMAIL_CHECKER ]]; then
+				EMAIL_VALIDATOR=$(cat ./databases/users.txt | grep "$EMAIL_CHECKER")
+				if [[ -z EMAIL_VALIDATOR ]]; then
+					DATA_USER=$(cat ./databases/users.txt | grep "$EMAIL_CHECKER")
+					echo 
+				 	if [[ -z $PASS ]]; then
+						case $PASS_RETRY in
+							$PASS)
+								zenity --notification --text="Ola $USER, seja bem vindo ao Animes Horizon!"
+								echo -e "$DADOS\n$(cat ./databases/users.txt)" > ./databases/users.txt
+								sleep 1
+								./views/index.sh
+							;;
+							**)
+								zenity --error --title="$TITLE" --text="As senhas não se coincidem !" --no-wrap --ellipsize
+								init
+							;;
+						esac
+					else
+						zenity --error --title="$TITLE" --text="Você precisa adicionar uma senha." --no-wrap --ellipsize
+						init
+				 	fi
+				 	
+			 	else
+			 		zenity --error --title="$TITLE" --text="Este email não foi cadastrado." --no-wrap --ellipsize
+			 		init
+				fi
+			else
+				zenity --error --title="$TITLE" --text="Este email não é valido." --no-wrap --ellipsize
+				init
+			fi
+		else
+			zenity --error --title="$TITLE" --text="Você precisa colocar o seu email para logar." --no-wrap --ellipsize
+			init
+		fi
 	}
 
 	init
@@ -43,11 +80,11 @@ login() {
 
 register() {
 	checker_data() {
-		if [[ " " -ne $USER ]]; then
-			if [[ " " -ne $EMAIL ]]; then
+		if [[ -z $USER ]]; then
+			if [[ -z $EMAIL ]]; then
 				 EMAIL_CHECKER=$(echo "$EMAIL" | grep "@gmail.com")
-				 if [[  " " -ne $EMAIL_CHECKER ]]; then
-				 	if [[ " " -ne $PASS ]]; then
+				 if [[  -z $EMAIL_CHECKER ]]; then
+				 	if [[ -z $PASS ]]; then
 						case $PASS_RETRY in
 							$PASS)
 								zenity --notification --text="Ola $USER, seja bem vindo ao Animes Horizon!"
@@ -79,7 +116,7 @@ register() {
 	}
 
 	init() {
-		DADOS=$(zenity --forms --title="$TITLE" --add-entry="Nome de Usuário" --add-entry="Email" --add-password="Senha" --add-password="Digita a senha novamente." --separator=",")
+		DADOS=$(zenity --forms --title="$TITLE" --text="Infelizmente o Botão de cancelar não está funcionando ..." --add-entry="Nome de Usuário" --add-entry="Email" --add-password="Senha" --add-password="Digita a senha novamente." --separator=",")
 
 		USER=$(echo "$DADOS" | cut -d, -f1)
 		EMAIL=$(echo "$DADOS" | cut -d, -f2)
